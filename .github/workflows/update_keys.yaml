@@ -1,0 +1,68 @@
+name: Update keys
+
+on:
+  schedule:
+    - cron:  '* */1 * * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    name: Update keys
+    permissions:
+      contents: write
+
+    strategy:
+      matrix:
+        include:
+          - branch: e1
+            script_url: https://megacloud.tv/js/player/a/prod/e1-player.min.js
+
+          - branch: e6
+            script_url: https://rapid-cloud.co/js/player/prod/e6-player-v2.min.js
+
+          - branch: e4
+            script_url: https://rabbitstream.net/js/player/prod/e4-player.min.js
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v3
+        with:
+          ref: master
+
+      - name: Setup NodeJS environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install synchrony-cli
+        run: npm install -g deobfuscator
+
+      - name: Download the obfuscated script
+        run: curl ${{ matrix.script_url }} --output script.js
+
+      - name: Deobfuscate script
+        continue-on-error: true
+        run: synchrony script.js
+
+      - name: Extract key
+        run: python3 .github/scripts/extractKey.py script.cleaned.js key
+
+      - name: Checkout ${{ matrix.branch }} branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ matrix.branch }}
+          path: key_repo
+
+      - name: Update key if it differs
+        run: |
+          cd key_repo
+          echo "Old -> $(cat key) || New -> $(cat ../key)"
+          if [[ "$(cat key)" != "$(cat ../key)" ]]; then
+            cp ../key .
+            git config --local user.email "github-actions[bot]@users.noreply.github.com"
+            git config --local user.name "github-actions[bot]"
+            git add key
+            git commit --amend -m "chore: Updating key"
+            git push --force
+          fi
