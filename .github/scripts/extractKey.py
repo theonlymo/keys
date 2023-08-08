@@ -17,7 +17,7 @@ def getPairs(file: str) -> list[list[int]]:
         switchCode = scriptText[switchIndex:breakIndex]
         indexes = []
         for variable in VAR_REGEX.findall(switchCode):
-            regex = re.compile(rf" {variable} = (\S+)[,|;]")
+            regex = re.compile(rf" {variable} = (\w+)[,|;|\n]")
             match = regex.search(scriptText)
             if match is not None:
                 indexes.append(toInt(match.group(1)))
