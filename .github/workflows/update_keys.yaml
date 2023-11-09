@@ -64,6 +64,7 @@ jobs:
           fi
 
       - name: Repeat
+        if: ${{ matrix.branch == 'e4' }}
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: Update keys
