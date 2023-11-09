@@ -20,12 +20,6 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - name: Purge Workflow History
-        continue-on-error: true
-        uses: Mattraks/delete-workflow-runs@v2
-        with:
-          keep_minimum_runs: 1
-
       - name: Clone repo
         uses: actions/checkout@v3
         with:
@@ -69,7 +63,7 @@ jobs:
           fi
 
       - name: Repeat
-        if: ${{ matrix.branch == 'e4' }}
+        if: ${{ matrix.branch == 'e4' &&  (success() || failure()) }} 
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: Update keys
