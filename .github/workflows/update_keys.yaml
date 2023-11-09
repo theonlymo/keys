@@ -73,3 +73,13 @@ jobs:
         with:
           workflow: Update keys
           token: ${{ secrets.PAT_GITHUB }}
+      - name: Delete workflow runs
+        uses: ./ # Uses an action in the root directory
+        id: delete-old-workflow-runs
+        with:
+          repository: MajorScruffy/delete-old-workflow-runs
+          workflow: ".github/workflows/update_keys.yaml"
+          older-than-seconds: 60
+          event: completed
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
