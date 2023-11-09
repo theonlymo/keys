@@ -62,8 +62,13 @@ jobs:
             git push --force
           fi
 
-      - name: Repeat
-        if: ${{ matrix.branch == 'e4' &&  (success() || failure()) }} 
+  retrigger:
+    name: Retrigger workflow
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [update]
+    steps:
+      - name: Retrigger workflow
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: Update keys
