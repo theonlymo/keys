@@ -70,5 +70,8 @@ jobs:
     steps:
       - name: Retrigger workflow
         uses: benc-uk/workflow-dispatch@v1
+        env:
+          PAT_GITHUB: ${{ secrets.PAT_GITHUB }}
         with:
           workflow: Update keys
+          token: $SUPER_SECRET
