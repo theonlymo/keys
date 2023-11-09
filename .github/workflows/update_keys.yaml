@@ -19,10 +19,6 @@ jobs:
             script_url: https://rabbitstream.net/js/player/prod/e4-player.min.js
 
     runs-on: ubuntu-latest
-    concurrency:
-        group: ${{ matrix.branch }}-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-        cancel-in-progress: true
-
     steps:
       - name: Purge Workflow History
         uses: Mattraks/delete-workflow-runs@v2
