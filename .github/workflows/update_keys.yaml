@@ -6,8 +6,6 @@ on:
 jobs:
   update:
     name: Update keys
-    permissions:
-      contents: write
 
     strategy:
       matrix:
