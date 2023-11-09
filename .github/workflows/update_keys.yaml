@@ -60,16 +60,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: master
-      - name: Delete workflow runs
-        uses: ./
-        id: delete-old-workflow-runs
-        with:
-          repository: MajorScruffy/delete-old-workflow-runs
-          workflow: .github/workflows/update_keys.yaml
-          older-than-seconds: 60
-          event: completed
-        env:
-          GITHUB_TOKEN: '${{ secrets.PAT_GITHUB }}'
       - name: Retrigger workflow
         uses: benc-uk/workflow-dispatch@v1
         with:
