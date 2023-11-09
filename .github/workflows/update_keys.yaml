@@ -1,8 +1,6 @@
 name: Update keys
-
-on:
-  workflow_dispatch:
-
+'on':
+  workflow_dispatch: null
 jobs:
   update:
     name: Update keys
@@ -10,45 +8,35 @@ jobs:
       matrix:
         include:
           - branch: e1
-            script_url: https://megacloud.tv/js/player/a/prod/e1-player.min.js
-
+            script_url: 'https://megacloud.tv/js/player/a/prod/e1-player.min.js'
           - branch: e6
-            script_url: https://rapid-cloud.co/js/player/prod/e6-player-v2.min.js
-
+            script_url: 'https://rapid-cloud.co/js/player/prod/e6-player-v2.min.js'
           - branch: e4
-            script_url: https://rabbitstream.net/js/player/prod/e4-player.min.js
-
+            script_url: 'https://rabbitstream.net/js/player/prod/e4-player.min.js'
     runs-on: ubuntu-latest
     steps:
       - name: Clone repo
         uses: actions/checkout@v3
         with:
           ref: master
-
       - name: Setup NodeJS environment
         uses: actions/setup-node@v3
         with:
           node-version: 18
-
       - name: Install synchrony-cli
         run: npm install -g deobfuscator
-
       - name: Download the obfuscated script
-        run: curl ${{ matrix.script_url }} --output script.js
-
+        run: 'curl ${{ matrix.script_url }} --output script.js'
       - name: Deobfuscate script
         continue-on-error: true
         run: synchrony script.js
-
       - name: Extract key
         run: python3 .github/scripts/extractKey.py script.cleaned.js key
-
-      - name: Checkout ${{ matrix.branch }} branch
+      - name: 'Checkout ${{ matrix.branch }} branch'
         uses: actions/checkout@v3
         with:
-          ref: ${{ matrix.branch }}
+          ref: '${{ matrix.branch }}'
           path: key_repo
-
       - name: Update key if it differs
         run: |
           cd key_repo
@@ -61,31 +49,29 @@ jobs:
             git commit --amend -m "chore: Updating key"
             git push --force
           fi
-
   retrigger:
     name: Retrigger workflow
     runs-on: ubuntu-latest
-    if: ${{ always() }}
-    needs: [update]
+    if: '${{ always() }}'
+    needs:
+      - update
     steps:
       - name: Clone repo
         uses: actions/checkout@v3
         with:
           ref: master
-
+      - name: Delete workflow runs
+        uses: ./
+        id: delete-old-workflow-runs
+        with:
+          repository: MajorScruffy/delete-old-workflow-runs
+          workflow: .github/workflows/update_keys.yaml
+          older-than-seconds: 60
+          event: completed
+        env:
+          GITHUB_TOKEN: '${{ secrets.PAT_GITHUB }}'
       - name: Retrigger workflow
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: Update keys
-          token: ${{ secrets.PAT_GITHUB }}
-
-      - name: Delete workflow runs
-        uses: ./ # Uses an action in the root directory
-        id: delete-old-workflow-runs
-        with:
-          repository: MajorScruffy/delete-old-workflow-runs
-          workflow: ".github/workflows/update_keys.yaml"
-          older-than-seconds: 60
-          event: completed
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
+          token: '${{ secrets.PAT_GITHUB }}'
