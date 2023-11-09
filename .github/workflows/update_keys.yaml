@@ -68,11 +68,17 @@ jobs:
     if: ${{ always() }}
     needs: [update]
     steps:
+      - name: Clone repo
+        uses: actions/checkout@v3
+        with:
+          ref: master
+
       - name: Retrigger workflow
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: Update keys
           token: ${{ secrets.PAT_GITHUB }}
+
       - name: Delete workflow runs
         uses: ./ # Uses an action in the root directory
         id: delete-old-workflow-runs
