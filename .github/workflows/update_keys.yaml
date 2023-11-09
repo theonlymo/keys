@@ -1,8 +1,6 @@
 name: Update keys
 
 on:
-  schedule:
-    - cron:  '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -66,3 +64,8 @@ jobs:
             git commit --amend -m "chore: Updating key"
             git push --force
           fi
+
+      - name: Repeat
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Update keys
