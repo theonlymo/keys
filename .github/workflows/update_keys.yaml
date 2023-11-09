@@ -74,4 +74,4 @@ jobs:
           PAT_GITHUB: ${{ secrets.PAT_GITHUB }}
         with:
           workflow: Update keys
-          token: $SUPER_SECRET
+          token: $PAT_GITHUB
