@@ -61,7 +61,7 @@ jobs:
         with:
           ref: master
       - name: Retrigger workflow
-        uses: benc-uk/workflow-dispatch@v1
+        uses: aurelien-baudet/workflow-dispatch@v2
         with:
           workflow: Update keys
           token: '${{ secrets.PAT_GITHUB }}'
